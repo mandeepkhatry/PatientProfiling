@@ -1,0 +1,34 @@
+{% extends 'Profiling/baseinitializer.html' %}
+
+{% block content %}
+<div class="container-fluid col-lg-8 col-xlg-9 col-md-7">
+		<div class="card">
+				<div class="card-block">
+	<div class="card-title">Visit Information</div>
+
+	{% if error %}
+		{{error}}
+	{% else %}
+		{% if form %}
+			<form action="" method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			 <center> <input type="submit" class="btn btn-primary" value="Submit"> </button> </center>
+			</form>
+		{% else %}
+			<p>
+				{% load staticfiles %}
+				<img src=" {% static unique_num %}"><br>
+				Doctor : {{ doctor.get_full_name }}<br>
+				Specialty : {{ doctor.specialty }}<br>
+				Patient : {{ user }}
+			</p>
+		{% endif %}
+	{% endif %}
+</div>
+</div>
+</div>
+
+</body>
+
+{% endblock %}
