@@ -20,7 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 
 
-SECRET_KEY =  ')i!0dlz)t471g8sal47ar6xcwz)u8tk@y3#no+1eq)r&8j(3^t'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -90,16 +89,7 @@ WSGI_APPLICATION = 'patientProfiling.wsgi.application'
 
 
 #Database dict here
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'profiling',
-        'USER': 'postgres',
-        'PASSWORD': 'beautiful',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+
 
 
 # Password validation

@@ -83,6 +83,6 @@ def analyze_liver_data(request):
 
     # Display either Your are liver patient or you are not liver patient
     if(result[0]==1):
-        return render(request,'analysis.html',{'result': 'You are at risk of a liver problem'})
+        return render(request,'analysis.html',{'result': 100})
    
-    return render(request,'analysis.html',{'result':'You are not at risk of a liver problem'})
+    return render(request,'analysis.html',{'result':0})
