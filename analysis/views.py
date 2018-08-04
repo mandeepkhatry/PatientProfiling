@@ -77,12 +77,12 @@ def analyze_liver_data(request):
     print(test)
 
 
-    result = load_model.predict([test])
-    
+    result = load_model.predict_proba([test])
 
+    result = result[0]
+    result = result[0]*100
 
-    # Display either Your are liver patient or you are not liver patient
-    if(result[0]==1):
-        return render(request,'analysis.html',{'result': 100})
-   
-    return render(request,'analysis.html',{'result':0})
+    print(result)
+    #Probability of a person to have a liver disease
+
+    return render(request,'analysis.html',{'result':result})
