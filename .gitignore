@@ -1,0 +1,5 @@
+local_settings.py
+*.pyo
+*.pyc
+migrations/
+user1/

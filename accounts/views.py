@@ -8,7 +8,6 @@ from django.core.exceptions import PermissionDenied
 from accounts.forms import *
 from accounts.models import UserAccount, HospitalAccount, DoctorAccount, LabAccount
 from accounts.decorators import LoggedInAs
-from Profiling.views import profile
 
 class UserRegister(View):
 	template = 'accounts/register.html'
@@ -22,6 +21,11 @@ class UserRegister(View):
 
 		if form.is_valid():
 			formData = form.cleaned_data
+
+			img = None
+			if 'profile_image' in request.FILES:
+				img = request.FILES['profile_image']
+
 			UserAccount.objects.create_user(id=formData['id'],
 											password=formData['password'],
 											first_name=formData['first_name'],
@@ -30,7 +34,8 @@ class UserRegister(View):
 											dob=formData['dob'],
 											sex=formData['sex'],
 											phone_num=formData.get('phone_num',''),
-											email=formData.get('email', ''))
+											email=formData.get('email', ''),
+											profile_image= img)
 			message = """
 						Thank you for registering.
 						Login to use your account.
@@ -58,7 +63,12 @@ class DoctorRegister(View):
 
 		if form.is_valid():
 			formData = form.cleaned_data
-			DoctorAccount.objects.create_doctor(
+
+			img = None
+			if 'profile_image' in request.FILES:
+				img = request.FILES['profile_image']
+
+			doctor = DoctorAccount.objects.create_doctor(
 											id=formData['id'],
 											password=formData['password'],
 											first_name=formData['first_name'],
@@ -68,8 +78,11 @@ class DoctorRegister(View):
 											sex=formData['sex'],
 											phone_num=formData.get('phone_num',''),
 											email=formData.get('email', ''),
-											specialty=formData['specialty']
+											specialty=formData['specialty'],
+											profile_image=img
 											)
+
+			request.user.doctors.add(doctor)
 
 			message = """
 						Thank you for registering.
@@ -143,8 +156,7 @@ class HospitalLogin(View):
 
 			login(request, user)
 
-			return render(request, 'accounts/login-thankyou.html', {'message': 'Login successful'})
-
+			return HttpResponseRedirect('/profile/entity')
 
 class UserLogin(View):
 	template = 'accounts/login.html'
@@ -165,7 +177,7 @@ class UserLogin(View):
 
 			if user_type(user, 'User') or user_type(user, 'Doctor'):
 				login(request, user)
-				return  redirect('profile', user_id= id)
+				return  redirect('profile', user_id=id)
 
 			error = 'Invalid Credentials'
 
@@ -190,7 +202,7 @@ class DoctorLogin(View):
 
 			if user_type(user, 'Doctor'):
 				login(request, user)
-				return render(request, 'accounts/login-thankyou.html', {'message': 'Login successful'})
+				return  redirect('doctorprofile', user_id=id)
 
 			error = 'Invalid Credentials'
 
@@ -218,7 +230,7 @@ class LabLogin(View):
 			if user_type(user, 'Lab'):
 				logout(request)
 				login(request, user)
-				return render(request, 'accounts/login-thankyou.html', {'message': 'Login successful'})
+				return HttpResponseRedirect('/profile/lab')
 
 			raise PermissionDenied
 

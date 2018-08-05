@@ -22,23 +22,30 @@ def add_record(request, unique_num):
 			formData = form.cleaned_data
 			prescription = formData['prescription']
 			comments = formData['comments']
+			temperature = formData['temperature']
+			bp_systolic = formData['bp_systolic']
+			bp_diastolic = formData['bp_diastolic']
+			height = formData['height']
+			weight = formData['weight']
 
 
 			visit_id = visit.objects.get(user_id=qrMapObj.user_id,
 										 timestamp=qrMapObj.timestamp)
 
-			try:
-				checkup_object = doctor_checkup.objects.get(visit_id=visit_id)
-				checkup_object.prescription = checkup_object.prescription + '\n' + prescription
-				checkup_object.comments = checkup_object.comments + '\n' + comments
-				checkup_object.save()
-			except:
-				doctor_checkup.objects.create(visit_id=visit_id,
-											  prescription=prescription,
-											  comments=comments)
+			doctor_checkup.objects.create(visit_id=visit_id,
+										  prescription=prescription,
+										  comments=comments,
+										  temperature=temperature,
+										  bp_systolic= bp_systolic,
+										  bp_diastolic= bp_diastolic,
+										  height= height,
+										  weight=weight)
 
 			return render(request, 'doctor_checkup.html', {'prescription': prescription,
-															'comments': comments}
-						 )
+															'comments': comments,
+															'profileobject': request.user
+															} )
 
-	return render(request, 'doctor_checkup.html', {'form': form})
+	return render(request, 'doctor_checkup.html', {'form': form,
+													'profileobject': request.user,
+													'unique_num': unique_num})

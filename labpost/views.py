@@ -78,9 +78,9 @@ def labReportInput(request, unique_num, record_type):
         else:
             form = TestImageForm()
 
-        return render(request, 'labimage.html', {'form': form})
+        return render(request, 'labimage.html', {'form': form, 'profileobject':request.user})
 
-def labReportGenerate(request, visit_id):
+def labReportGenerate(visit_id):
     """ Generates lab report in tabular form """
     testItems = TestItem.objects.filter(visit_id=visit_id)
     
@@ -106,28 +106,24 @@ def labReportGenerate(request, visit_id):
         elif result <= min:
             flag = 'L'
         else:
-            flag = 'M'
+            flag = '-'
         #form individual list
         testR = [testName, result, flag, unit, reference]
         #append to testResult
         testResult.append(testR)
 
-    # print(testResult)
-
-    return render(request, 'labreport.html', {
-        'testResult': testResult,
-    })
+    return testResult
 
 
 
 
 
 #generate report of image report like Xray
-def labImageReport(request, visit_id):
+def labImageReport(visit_id):
     """ Generate report of 'IMAGE FILE' uploaded to 
     patient's account """
     #dummy test data
     #SELECT * FROM TestImage WHERE user = user_id = key and dateStamp = date
     testResult = TestImage.objects.filter(visit_id=visit_id)
 
-    return render(request, 'labimagereport.html', {'testResult':testResult})
+    return testResult

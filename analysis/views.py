@@ -6,7 +6,7 @@ from initializer.models import visit
 from labpost.models import TestItem
 # Create your views here.
 
-def analyze_liver_data(request):
+def analyse_liver_data(request):
     def replace(given_list, old_value, new_value):
         for ind, val in enumerate(given_list):
             if val == old_value:
@@ -14,27 +14,23 @@ def analyze_liver_data(request):
 
         return given_list
 
-    attr_list = [
-    'Total Billirubin',
-    'Direct Bilirubin',
-    'Alkaline Phosphotase',
-    'Alamine_Aminotransferase',
-    'Aspartate Aminotransferase',
-    'Total_Protiens',
-    'Albumin',
-    'Albumin and Globulin_Ratio',
-    ]
+    attr_list = ['total_bilirubin',
+                 'direct_bilirubin',
+                 'ALP',
+                 'AST',
+                 'ALT',
+                 'TPC',
+                 'albumin',
+                 'AGR']
 
-    attr_vals = {
-    'Total Billirubin':None,
-    'Direct Bilirubin':None,
-    'Alkaline Phosphotase':None,
-    'Alamine_Aminotransferase':None,
-    'Aspartate Aminotransferase':None,
-    'Total_Protiens':None,
-    'Albumin':None,
-    'Albumin and Globulin_Ratio':None,
-    }
+    attr_vals = {'total_bilirubin': None,
+                 'direct_bilirubin': None,
+                 'ALP': None,
+                 'AST': None,
+                 'ALT': None,
+                 'TPC': None,
+                 'albumin': None,
+                 'AGR': None}
 
 
 
@@ -47,7 +43,7 @@ def analyze_liver_data(request):
     test = []
     user = request.user
     age = user.get_age()
-    print(age)
+
     if user.sex == 'male':
         sex = 1
     else:
@@ -57,8 +53,6 @@ def analyze_liver_data(request):
     test.append(sex)
 
     visits = visit.objects.filter(user_id=user).order_by('-timestamp')
-
-    print(visits)
 
     for visit_obj in visits:
         tests = TestItem.objects.filter(visit_id=visit_obj)
@@ -70,19 +64,19 @@ def analyze_liver_data(request):
 
     for attr, value in attr_vals.items():
         if not value:
-            return render(request,'analysis.html',{'result':'Not enough data'})        
+            return render(request,'analysis.html',{'error':'Not enough data for prediction',
+                                                   'profileobject': request.user})       
         attr_list = replace(attr_list, attr, value)
 
     test = test + attr_list
-    print(test)
 
 
     result = load_model.predict_proba([test])
 
     result = result[0]
-    result = result[0]*100
+    result = int(result[0]*100)
 
     print(result)
     #Probability of a person to have a liver disease
 
-    return render(request,'analysis.html',{'result':result})
+    return render(request,'analysis.html',{'result':result, 'profileobject':user})
